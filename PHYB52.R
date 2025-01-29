@@ -1,0 +1,96 @@
+library(knitr)
+library(htmlTable)
+library(gt)
+library(gridExtra)
+
+q_total <- 100
+n_a <- 200
+n_b <- 100
+n_total <- n_a + n_b
+total_microstates <- choose(n_total + q_total - 1, q_total)
+
+
+multiplicity_table <- data.frame(
+  column1 = numeric(),
+  column2 = numeric(),
+  column3 = numeric(),
+  column4 = numeric(),
+  column5 = numeric()
+)
+
+for (q in 0:q_total) {
+  q_a <- q
+  q_b <- q_total - q
+  multiplicity_a <- choose(n_a + q_a - 1, q_a)
+  multiplicity_b <- choose(n_b + q_b - 1, q_b)
+  total_multiplicity <- multiplicity_a * multiplicity_b
+  result <- c(q_a, multiplicity_a, q_b, multiplicity_b, total_multiplicity)
+  multiplicity_table <- rbind(multiplicity_table, result)
+}
+
+colnames(multiplicity_table) <- c("q_a", "Ω_a", "q_b", "Ω_b", "Ω_total")
+
+g <- ggplot(data = multiplicity_table, mapping = aes(q_a, Ω_total)) +
+  geom_line() +
+  geom_point() +
+  ylim(0, max(multiplicity_table$Ω_total)) +
+  ggtitle("q_a agaisnt total multiplictity")
+
+g #Graph of q_a against total multiplicity
+gt(multiplicity_table) #Table of multiplicities
+htmlTable(multiplicity_table) #Opens the table in HTML
+
+most_probable_macrostate <- multiplicity_table[which.max(
+  multiplicity_table$Ω_total), ]
+
+probability_most_probable_macrostate <- most_probable_macrostate$Ω_total / 
+  total_microstates
+
+least_probable_macrostate <- multiplicity_table[which.min(
+  multiplicity_table$Ω_total), ]
+
+probability_least_probable_macrostate <- least_probable_macrostate$Ω_total / 
+  total_microstates
+
+results <- data.frame(column1 = numeric(),
+                      column2 = numeric(),
+                      column3 = numeric(),
+                      column4 = numeric())
+
+results <- rbind(c(most_probable_macrostate$q_a, 
+                probability_most_probable_macrostate,
+                least_probable_macrostate$q_a,
+                probability_least_probable_macrostate))
+
+colnames(results) <- c("Most Probable Macrostate q_a", 
+                       "Probability of most probable macrostate", 
+                       "Least Probable Macrostate q_a", 
+                       "Probability of least probable macrostate")
+
+
+probabilities <- multiplicity_table$Ω_total / total_microstates
+prob_table <- cbind(multiplicity_table, probabilities)
+
+colnames(prob_table) <- c("q_a", "Ω_a", "q_b", "Ω_b", "Ω_total",
+                                  "Probability")
+
+g_prob <- ggplot(data = prob_table, mapping = aes(q_a, Probability)) +
+  geom_line() +
+  ggtitle("q_a agaisnt total multiplictity")
+
+g_prob
+
+results #Results of most and least probable macrostate
+
+#Checking for total probability of an interval
+A <- 50
+B <- 51
+prob_int <- 0
+
+for (i in A:B){
+  prob <- prob_table[prob_table$q_a == i, ]
+  prob_int <- prob$Probability + prob_int
+}
+
+prob_int
+
