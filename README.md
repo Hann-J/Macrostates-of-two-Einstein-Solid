@@ -1,4 +1,4 @@
-# Macrostates-of-two-Einstein-Solid
+# Multiplicities-of-two-Einstein-Solid
 
 This is a R code for finding the calculating the multiplicities of two Einstein Solids, solid A and B. 
 
