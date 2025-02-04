@@ -2,10 +2,11 @@ library(knitr)
 library(htmlTable)
 library(gt)
 library(gridExtra)
+library(ggplot2)
 
-q_total <- 100
-n_a <- 200
-n_b <- 100
+q_total <- 1000
+n_a <- 100
+n_b <- 200
 n_total <- n_a + n_b
 total_microstates <- choose(n_total + q_total - 1, q_total)
 
@@ -38,7 +39,7 @@ g <- ggplot(data = multiplicity_table, mapping = aes(q_a, Ω_total)) +
 
 g #Graph of q_a against total multiplicity
 gt(multiplicity_table) #Table of multiplicities
-htmlTable(multiplicity_table) #Opens the table in HTML
+html_mult_table <- htmlTable(multiplicity_table) #Opens the table in HTML
 
 most_probable_macrostate <- multiplicity_table[which.max(
   multiplicity_table$Ω_total), ]
@@ -93,4 +94,6 @@ for (i in A:B){
 }
 
 prob_int
-
+html_multiplicity_table
+g
+html_mult_table
